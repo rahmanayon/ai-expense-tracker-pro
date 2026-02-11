@@ -1,0 +1,46 @@
+<!-- dashboard.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard - AI Expense Tracker Pro</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('design-system.html');
+        body { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; }
+        .app-header { background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); }
+        .nav { display: flex; justify-content: space-between; align-items: center; padding: var(--space-lg) 0; }
+        .nav-links { display: flex; gap: var(--space-xl); list-style: none; }
+        .nav-links a { color: var(--text); text-decoration: none; font-weight: 500; padding: var(--space-sm) var(--space-md); border-radius: var(--radius-md); }
+        .nav-links a.active { background: var(--primary); color: white; }
+        .summary-cards { grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); }
+        .summary-card { background: white; padding: var(--space-xl); border-radius: var(--radius-lg); border-left: 4px solid var(--border); }
+        .summary-card.income { border-left-color: #10b981; }
+        .summary-card.expenses { border-left-color: #ef4444; }
+        .amount { font-size: 2rem; font-weight: 700; }
+        .filters-panel { background: white; padding: var(--space-xl); border-radius: var(--radius-lg); }
+        .chart-container { background: white; padding: var(--space-xl); border-radius: var(--radius-lg); height: 400px; }
+        .ai-insights { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: var(--space-xl); border-radius: var(--radius-lg); }
+        .insight-card { background: rgba(255,255,255,0.1); padding: var(--space-lg); border-radius: var(--radius-md); }
+        .progress-bar { width: 100%; height: 8px; background: var(--border); border-radius: 4px; overflow: hidden; }
+        .progress-fill { height: 100%; transition: width 0.3s ease; }
+        .progress-fill.danger { background: var(--danger); }
+    </style>
+</head>
+<body>
+    <header class="app-header"><nav class="container nav"><div>💰 AI Finance Pro</div><ul class="nav-links"><li><a class="active">Dashboard</a></li><li><a>Transactions</a></li></ul></nav></header>
+    <main class="container">
+        <div class="filters-panel"><h3>Filters</h3><div class="flex"><input type="date" class="input"><select class="input" multiple><option>Groceries</option></select><button class="btn btn-primary">Apply</button></div></div>
+        <div class="grid summary-cards">
+            <div class="summary-card income"><h4>Income</h4><div class="amount" style="color:#10b981;">$0.00</div></div>
+            <div class="summary-card expenses"><h4>Expenses</h4><div class="amount" style="color:#ef4444;">$13,050.00</div></div>
+        </div>
+        <div class="grid" style="grid-template-columns:2fr 1fr;"><div class="chart-container"><canvas id="trendChart"></canvas></div><div class="chart-container"><canvas id="categoryChart"></canvas></div></div>
+        <div class="ai-insights"><h3>AI Insights</h3><div class="insight-card"><h4>Alert</h4><p>Spent $13,050 on Groceries (100% of total).</p></div></div>
+    </main>
+    <script>
+        new Chart(document.getElementById('trendChart'), { type: 'line', data: { labels: ['Dec','Jan'], datasets:[{ label:'Expenses', data:[0,13050], borderColor:'#ef4444' }] } });
+        new Chart(document.getElementById('categoryChart'), { type: 'doughnut', data: { labels: ['Groceries'], datasets:[{ data:[13050], backgroundColor:['#ef4444'] }] } });
+    </script>
+</body>
+</html>

@@ -1,0 +1,10 @@
+graph TD
+    A[Web Client: React 18 + Next.js 14] --> B[API Gateway: Node.js + Express]
+    C[Android App: Kotlin + Jetpack Compose] --> B
+    D[OCR Service: Python Tesseract] --> B
+    E[AI Engine: Python FastAPI] --> B
+    B --> F[Backend: Node.js + Express]
+    F --> G[Database: PostgreSQL 15]
+    F --> H[Cache: Redis]
+    F --> I[Message Queue: RabbitMQ]
+    G --> J[Backup: AWS S3]

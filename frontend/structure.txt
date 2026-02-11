@@ -1,0 +1,34 @@
+frontend/
+├── app/
+│   ├── dashboard/
+│   │   ├── page.js
+│   │   └── DashboardFilters.js
+│   ├── transactions/
+│   │   └── page.js
+│   ├── investments/
+│   │   └── page.js
+│   ├── settings/
+│   │   └── page.js
+│   └── layout.js
+├── components/
+│   ├── Dashboard/
+│   │   ├── AIInsightsPanel.js
+│   │   ├── BudgetChart.js
+│   │   ├── ExpenseChart.js
+│   │   └── IncomeExpenseTrend.js
+│   ├── Transactions/
+│   │   ├── TransactionForm.js
+│   │   ├── TransactionList.js
+│   │   ├── OCRUpload.js
+│   │   └── VoiceInput.js
+│   └── UI/
+│       ├── Header.js
+│       ├── Sidebar.js
+│       └── LoadingSpinner.js
+├── lib/
+│   ├── api.js
+│   └── auth.js
+├── hooks/
+│   └── useTransactions.js
+├── styles/
+└── package.json

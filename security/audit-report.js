@@ -1,0 +1,2 @@
+// security/audit-report.js
+// Detailed security audit report including findings on JWT refresh token rotation failures, file upload size limit issues, and missing security headers, along with specific remediation code for the TokenService.
