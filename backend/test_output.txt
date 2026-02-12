@@ -1,0 +1,89 @@
+
+> expense-tracker-backend@1.0.0 test
+> jest --coverage tests/integration/api.test.js
+
+(node:32387) [DEP0170] DeprecationWarning: The URL sqlite::memory: is invalid. Future versions of Node.js will throw an error.
+(Use `node --trace-deprecation ...` to show where the warning was created)
+FAIL tests/integration/api.test.js
+  API Integration Tests
+    Complete user flow
+      ✓ should handle complete user registration and transaction flow (810 ms)
+    Concurrent operations
+      ✓ should handle concurrent transaction creation (58 ms)
+    Error handling
+      ✕ should handle database connection errors gracefully (5 ms)
+      ✕ should handle validation errors properly (3 ms)
+
+  ● API Integration Tests › Error handling › should handle database connection errors gracefully
+
+    expected 500 "Internal Server Error", got 401 "Unauthorized"
+
+      206 |         .get('/api/transactions')
+      207 |         .set('Authorization', `Bearer ${authToken}`)
+    > 208 |         .expect(500);
+          |          ^
+      209 |       expect(response.body.success).toBe(false);
+      210 |       expect(response.body.error).toBe('Internal Server Error');
+      211 |       sequelize.query = originalQuery;
+
+      at Object.expect (tests/integration/api.test.js:208:10)
+      ----
+      at Test._assertStatus (node_modules/supertest/lib/test.js:252:14)
+      at node_modules/supertest/lib/test.js:308:13
+      at Test._assertFunction (node_modules/supertest/lib/test.js:285:13)
+      at Test.assert (node_modules/supertest/lib/test.js:164:23)
+      at Server.localAssert (node_modules/supertest/lib/test.js:120:14)
+
+  ● API Integration Tests › Error handling › should handle validation errors properly
+
+    expected 400 "Bad Request", got 401 "Unauthorized"
+
+      222 |           transactionDate: 'invalid-date'
+      223 |         })
+    > 224 |         .expect(400);
+          |          ^
+      225 |       expect(response.body.success).toBe(false);
+      226 |       expect(response.body.errors).toBeDefined();
+      227 |       expect(response.body.errors.length).toBeGreaterThan(0);
+
+      at Object.expect (tests/integration/api.test.js:224:10)
+      ----
+      at Test._assertStatus (node_modules/supertest/lib/test.js:252:14)
+      at node_modules/supertest/lib/test.js:308:13
+      at Test._assertFunction (node_modules/supertest/lib/test.js:285:13)
+      at Test.assert (node_modules/supertest/lib/test.js:164:23)
+      at Server.localAssert (node_modules/supertest/lib/test.js:120:14)
+
+------------------|---------|----------|---------|---------|----------------------------
+File              | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s          
+------------------|---------|----------|---------|---------|----------------------------
+All files         |   69.81 |     22.5 |   55.26 |   70.74 |                            
+ src              |   81.81 |       10 |      50 |   81.25 |                            
+  app.js          |   81.81 |       10 |      50 |   81.25 | 14-15,43-51                
+ src/config       |   66.66 |    16.66 |      25 |   69.23 |                            
+  server.js       |   66.66 |    16.66 |      25 |   69.23 | 58,71,81-98                
+ src/middleware   |   77.77 |       50 |      50 |   77.77 |                            
+  auth.js         |   77.77 |       50 |      50 |   77.77 | 10,17,30-31                
+ src/models       |   88.46 |    41.66 |   72.72 |   88.46 |                            
+  Tenant.js       |     100 |      100 |     100 |     100 |                            
+  Transaction.js  |   58.33 |       25 |      50 |   58.33 | 36,99,106-109              
+  User.js         |   95.45 |       50 |   83.33 |   95.45 | 113                        
+  index.js        |     100 |       50 |     100 |     100 | 6                          
+ src/routes       |   60.58 |    19.04 |   58.82 |   61.94 |                            
+  ai.js           |     100 |      100 |     100 |     100 |                            
+  auth.js         |   60.86 |       50 |      60 |   60.86 | 12,28,34,47,52,58-63,68-78 
+  budgets.js      |     100 |      100 |     100 |     100 |                            
+  categories.js   |     100 |      100 |     100 |     100 |                            
+  dashboard.js    |     100 |      100 |     100 |     100 |                            
+  investments.js  |      80 |      100 |       0 |     100 |                            
+  ocr.js          |      80 |      100 |       0 |     100 |                            
+  transactions.js |   38.88 |     9.37 |      50 |   38.88 | 14,37-129,172,196,205-212  
+  voice.js        |      80 |      100 |       0 |     100 |                            
+ src/services     |      50 |      100 |       0 |      50 |                            
+  mfaService.js   |      50 |      100 |       0 |      50 | 6-11,15                    
+------------------|---------|----------|---------|---------|----------------------------
+Test Suites: 1 failed, 1 total
+Tests:       2 failed, 2 passed, 4 total
+Snapshots:   0 total
+Time:        1.954 s, estimated 2 s
+Ran all test suites matching /tests\/integration\/api.test.js/i.

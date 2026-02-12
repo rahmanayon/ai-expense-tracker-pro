@@ -1,7 +1,7 @@
 // backend/tests/unit/transactionController.test.js
 const request = require('supertest');
 const app = require('../../src/app');
-const { Transaction, Category, User } = require('../../src/models');
+const { Transaction, Category, User, sequelize } = require('../../src/models');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 
@@ -11,6 +11,12 @@ describe('Transaction Controller', () => {
   let categoryId;
 
   beforeAll(async () => {
+    try {
+      await sequelize.sync({ force: true });
+    } catch (error) {
+      console.error('Sync failed:', error);
+      throw error;
+    }
     // Create test user
     const hashedPassword = await bcrypt.hash('TestPassword123!', 10);
     const user = await User.create({
@@ -99,7 +105,7 @@ describe('Transaction Controller', () => {
     it('should reject transaction with future date', async () => {
       const futureDate = new Date();
       futureDate.setDate(futureDate.getDate() + 1);
-      
+
       const transactionData = {
         categoryId,
         type: 'expense',
@@ -120,6 +126,7 @@ describe('Transaction Controller', () => {
   describe('GET /api/transactions', () => {
     beforeEach(async () => {
       // Create test transactions
+      await Transaction.destroy({ where: { userId } });
       await Transaction.bulkCreate([
         {
           userId,

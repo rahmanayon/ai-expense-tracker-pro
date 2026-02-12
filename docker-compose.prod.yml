@@ -22,8 +22,8 @@ services:
       dockerfile: Dockerfile
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgresql://user:password@postgres:5432/expensetracker
-      - REDIS_URL=redis://redis:6379
+      - DATABASE_URL=${DATABASE_URL}
+      - REDIS_URL=${REDIS_URL}
     deploy:
       replicas: 3
       restart_policy:

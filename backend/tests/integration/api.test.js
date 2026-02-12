@@ -12,6 +12,9 @@ describe('API Integration Tests', () => {
   beforeAll(async () => {
     server = app.listen(0);
     await sequelize.sync({ force: true });
+    // Seed default categories
+    const { Category } = require('../../src/models');
+    await Category.create({ id: 1, name: 'General' });
   });
 
   afterAll(async () => {
@@ -44,7 +47,7 @@ describe('API Integration Tests', () => {
 
       expect(loginResponse.body.success).toBe(true);
       expect(loginResponse.body.data.token).toBeDefined();
-      
+
       authToken = loginResponse.body.data.token;
       userId = loginResponse.body.data.user.id;
 
@@ -86,9 +89,12 @@ describe('API Integration Tests', () => {
         const response = await request(app)
           .post('/api/transactions')
           .set('Authorization', `Bearer ${authToken}`)
-          .send(transaction)
-          .expect(201);
+          .send(transaction);
 
+        if (response.status !== 201) {
+          console.error('Transaction creation failed:', JSON.stringify(response.body, null, 2));
+        }
+        expect(response.status).toBe(201);
         expect(response.body.success).toBe(true);
       }
 
@@ -135,6 +141,21 @@ describe('API Integration Tests', () => {
   });
 
   describe('Concurrent operations', () => {
+    beforeAll(async () => {
+      if (!authToken) {
+        const res = await request(app)
+          .post('/api/auth/register')
+          .send({
+            email: `concurrent-${Date.now()}@test.com`,
+            password: 'TestPassword123!',
+            firstName: 'Concurrent',
+            lastName: 'Test'
+          });
+        authToken = res.body.data.token;
+        userId = res.body.data.user.id;
+      }
+    });
+
     it('should handle concurrent transaction creation', async () => {
       const promises = [];
       for (let i = 0; i < 10; i++) {
@@ -160,16 +181,37 @@ describe('API Integration Tests', () => {
   });
 
   describe('Error handling', () => {
+    beforeAll(async () => {
+      if (!authToken) {
+        const res = await request(app)
+          .post('/api/auth/register')
+          .send({
+            email: `error-${Date.now()}@test.com`,
+            password: 'TestPassword123!',
+            firstName: 'Error',
+            lastName: 'Test'
+          });
+        if (res.status !== 201) {
+          console.error('Error block registration failed:', res.body);
+        }
+        authToken = res.body?.data?.token;
+        userId = res.body?.data?.user?.id;
+      }
+    });
+
     it('should handle database connection errors gracefully', async () => {
-      const originalQuery = sequelize.query;
-      sequelize.query = jest.fn().mockRejectedValue(new Error('Database connection failed'));
+      const { Transaction } = require('../../src/models');
+      const originalFind = Transaction.findAndCountAll;
+      Transaction.findAndCountAll = jest.fn().mockRejectedValue(new Error('Database connection failed'));
+
       const response = await request(app)
         .get('/api/transactions')
         .set('Authorization', `Bearer ${authToken}`)
         .expect(500);
+
       expect(response.body.success).toBe(false);
       expect(response.body.error).toBe('Internal Server Error');
-      sequelize.query = originalQuery;
+      Transaction.findAndCountAll = originalFind;
     });
 
     it('should handle validation errors properly', async () => {
