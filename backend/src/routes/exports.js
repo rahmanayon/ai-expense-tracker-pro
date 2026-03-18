@@ -1,11 +1,24 @@
 // backend/src/routes/exports.js
 const express = require('express');
 const { body, param, validationResult } = require('express-validator');
+const rateLimit = require('express-rate-limit');
 const exportController = require('../controllers/exportController');
 const { authenticate, requireFeature } = require('../middleware/auth');
 const { asyncHandler } = require('../middleware/errorHandler');
 
 const router = express.Router();
+
+// Rate limiter: export operations are resource-intensive — stricter limit
+const exportLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  message: 'Too many export requests. Please try again later.',
+  standardHeaders: true,
+  legacyHeaders: false,
+  handler: (req, res, _next, options) => {
+    res.status(options.statusCode).json({ success: false, error: options.message });
+  }
+});
 
 // Validation middleware
 const validate = (req, res, next) => {
@@ -18,6 +31,7 @@ const validate = (req, res, next) => {
 
 // Export data
 router.post('/',
+  exportLimiter,
   authenticate,
   requireFeature('exports'),
   [
@@ -32,6 +46,7 @@ router.post('/',
 
 // Get export status (for async exports)
 router.get('/:exportId/status',
+  exportLimiter,
   authenticate,
   asyncHandler(async (req, res) => {
     const { exportId } = req.params;
@@ -61,6 +76,7 @@ router.get('/:exportId/status',
 
 // Download export file
 router.get('/:exportId/download',
+  exportLimiter,
   authenticate,
   asyncHandler(async (req, res) => {
     const { exportId } = req.params;

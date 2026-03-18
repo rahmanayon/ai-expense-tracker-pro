@@ -11,7 +11,13 @@ app = FastAPI(title="AI Expense Tracker Engine")
 
 import os
 
-allowed_origins = os.getenv("ALLOWED_ORIGINS", "*").split(",")
+_allowed_origins_env = os.getenv("ALLOWED_ORIGINS", "")
+if not _allowed_origins_env or _allowed_origins_env.strip() == "*":
+    raise RuntimeError(
+        "ALLOWED_ORIGINS environment variable must be set to a comma-separated list of "
+        "allowed origins. Using a wildcard '*' is not permitted in this service."
+    )
+allowed_origins = [o.strip() for o in _allowed_origins_env.split(",") if o.strip()]
 
 app.add_middleware(
     CORSMiddleware,

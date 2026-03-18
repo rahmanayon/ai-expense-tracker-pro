@@ -36,13 +36,17 @@ const securityMiddleware = (app) => {
                 fontSrc: ["'self'", "https://fonts.gstatic.com"],
                 imgSrc: ["'self'", "data:", "https:"],
                 scriptSrc: ["'self'"],
-                connectSrc: ["'self'", process.env.FRONTEND_URL || '*']
+                connectSrc: ["'self'", ...(process.env.FRONTEND_URL ? [process.env.FRONTEND_URL] : [])]
             }
         }
     }));
 
+    if (!process.env.FRONTEND_URL) {
+        console.error('FRONTEND_URL environment variable is not set. CORS will deny all cross-origin requests.');
+    }
+
     app.use(cors({
-        origin: process.env.FRONTEND_URL || '*',
+        origin: process.env.FRONTEND_URL || false,
         credentials: true,
         optionsSuccessStatus: 200
     }));
