@@ -1,0 +1,18 @@
+android/
+├── app/
+│   ├── src/
+│   │   ├── main/
+│   │   │   ├── java/com/expensetracker/
+│   │   │   │   ├── MainActivity.kt
+│   │   │   │   ├── ui/
+│   │   │   │   │   ├── dashboard/
+│   │   │   │   │   ├── transactions/
+│   │   │   │   │   └── components/
+│   │   │   │   ├── data/
+│   │   │   │   │   ├── api/
+│   │   │   │   │   ├── repository/
+│   │   │   │   │   └── models/
+│   │   │   │   └── utils/
+│   │   │   └── res/
+│   │   └── test/
+│   └── build.gradle

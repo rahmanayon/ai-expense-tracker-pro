@@ -1,0 +1,42 @@
+[
+    {
+        "index": 80,
+        "content": "#!/bin/bash\n# scripts/security-audit.sh\n\necho \"🔒 Running security audit...\"\n\n# Check for common vulnerabilities\necho \"Running OWASP dependency check...\"\ndocker run --rm -v \"$PWD:/src\" owasp/dependency-check --project \"AI Expense Tracker\" --scan /src --format \"ALL\"\n\n# SSL/TLS Configuration Test\necho \"Testing SSL configuration...\"\nnmap --script ssl-enum-ciphers -p 443 aiexpensetracker.com | grep -E \"TLSv1.3|TLSv1.2\"\n\n# Security headers check\necho \"Checking security headers...\"\nsecurity_headers=(\n  \"Strict-Transport-Security\"\n  \"X-Content-Type-Options\"\n  \"X-Frame-Options\"\n  \"X-XSS-Protection\"\n  \"Content-Security-Policy\"\n  \"Referrer-Policy\"\n  \"Permissions-Policy\"\n)\n\nfor header in \"${security_headers[@]}\"; do\n  if curl -s -I https://aiexpensetracker.com | grep -q \"$header\"; then\n    echo \"✅ $header present\"\n  else\n    echo \"❌ $header missing\"\n  fi\ndone"
+    },
+    {
+        "index": 81,
+        "content": "// tests/performance/benchmark.js\nconst autocannon = require('autocannon');\nconst { PassThrough } = require('stream');\n\nconst runBenchmark = async () => {\n  const results = [];\n  // API Endpoints Benchmark for Health Check, Dashboard, and Transactions\n  // ... (benchmarking logic and database performance tests)\n  return results;\n};\n\nrunBenchmark().then(results => {\n  console.log('\\n📈 Performance Benchmark Results:');\n  console.table(results);\n});"
+    },
+    {
+        "index": 82,
+        "content": "# scripts/load-test.sh\necho \"🚀 Starting load testing...\"\n# Installs k6 and runs a load test script with stages:\n# Ramp up to 100 users, then 200, then ramp down.\n# Thresholds: 99% of requests < 1.5s, Error rate < 10%."
+    },
+    {
+        "index": 83,
+        "content": "graph TB\n    subgraph \"Frontend Layer\"\n        WEB[Web App - Next.js]\n        MOBILE[Mobile App - React Native]\n        PWA[PWA - Offline Support]\n    end\n    \n    subgraph \"API Gateway\"\n        NGINX[Nginx Load Balancer]\n        GATEWAY[API Gateway]\n        CACHE[Redis Cache]\n    end\n    \n    subgraph \"Application Layer\"\n        BACKEND[Node.js Backend]\n        AI[Python AI Engine]\n        WORKERS[Background Workers]\n    end\n    \n    subgraph \"Data Layer\"\n        POSTGRES[(PostgreSQL)]\n        REDIS[(Redis Cache)]\n        S3[(AWS S3 Storage)]\n    end\n    \n    subgraph \"Monitoring\"\n        PROMETHEUS[Prometheus]\n        GRAFANA[Grafana]\n        ELK[ELK Stack]\n    end\n    \n    WEB --> NGINX\n    MOBILE --> GATEWAY\n    PWA --> CACHE"
+    },
+    {
+        "index": 84,
+        "content": "# Complete production deployment\ngit clone https://github.com/yourorg/ai-expense-tracker-pro.git\ncd ai-expense-tracker-pro\n\n# Configure environment\ncp .env.production .env\n# Edit .env with your configuration\n\n# Deploy with Docker Compose\ndocker-compose -f docker-compose.prod.yml up -d\n\n# Or deploy to Kubernetes\nkubectl apply -f infrastructure/k8s/"
+    },
+    {
+        "index": 85,
+        "content": "C4Context\n    title AI Expense Tracker Pro - System Context Diagram\n    \n    Person(user, \"End User\", \"Individual or business user managing finances\")\n    Person(admin, \"System Admin\", \"Platform administrator\")\n    \n    System_Boundary(platform, \"AI Expense Tracker Pro\") {\n        System(web, \"Web Application\", \"Next.js 14, React 18, TypeScript\")\n        System(mobile, \"Mobile Application\", \"React Native, Expo SDK\")\n        System(api, \"API Gateway\", \"Node.js, Express, GraphQL\")\n        System(ai, \"AI Engine\", \"Python FastAPI, TensorFlow, Tesseract\")\n        System(worker, \"Background Workers\", \"Bull Queue, Redis\")\n    }"
+    },
+    {
+        "index": 86,
+        "content": "// security/audit-report.js\n// Detailed security audit report including findings on JWT refresh token rotation failures, file upload size limit issues, and missing security headers, along with specific remediation code for the TokenService."
+    },
+    {
+        "index": 87,
+        "content": "// backend/src/security/enhancedProtection.js\nconst helmet = require('helmet');\n// Implementation of a SecurityMiddleware class using helmet, cors, express-rate-limit (with Redis store), and sanitization tools like mongo-sanitize and xss-clean."
+    },
+    {
+        "index": 88,
+        "content": "-- database/optimizations/final-performance-schema.sql\n-- Advanced PostgreSQL optimizations:\n-- * Table partitioning for time-series data (monthly partitions for 2026).\n-- * Hyper-optimized covering and BRIN indexes.\n-- * Materialized views for dashboard summaries with concurrent refresh."
+    },
+    {
+        "index": 89,
+        "content": "// backend/src/cache/enterpriseCache.js\nconst NodeCache = require('node-cache');\nconst Redis = require('ioredis');\n// Multi-layer EnterpriseCacheManager implementation:\n// * L1: In-memory cache (NodeCache) for high-speed access.\n// * L2: Distributed Redis cache for shared data.\n// * L3: CDN invalidation for global assets.\n// * Includes cache warming and tag-based invalidation logic."
+    }
+]

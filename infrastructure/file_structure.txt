@@ -1,0 +1,14 @@
+backend/
+├── src/
+│   ├── config/          # Database, auth, etc.
+│   ├── controllers/     # Route handlers
+│   ├── middleware/      # Auth, validation, etc.
+│   ├── models/          # Sequelize models
+│   ├── routes/          # API routes
+│   ├── services/        # Business logic
+│   ├── utils/           # Helpers
+│   └── app.js           # Express app
+├── tests/
+│   └── unit/
+├── package.json
+└── Dockerfile

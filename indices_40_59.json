@@ -1,0 +1,102 @@
+[
+    {
+        "index": 40,
+        "filename": "tests/unit/transactionController_test.js",
+        "length": 7585
+    },
+    {
+        "index": 41,
+        "filename": "tests/integration/api_test.js",
+        "length": 6551
+    },
+    {
+        "index": 42,
+        "filename": "tests/performance/load_test.js",
+        "length": 3247
+    },
+    {
+        "index": 43,
+        "filename": "database/migrations/001_initial_schema.sql",
+        "length": 8148
+    },
+    {
+        "index": 44,
+        "filename": "database/scripts/backup.sh",
+        "length": 1808
+    },
+    {
+        "index": 45,
+        "filename": "ai_engine/app_v2.py",
+        "length": 12202
+    },
+    {
+        "index": 46,
+        "filename": "mobile/app.json",
+        "length": 1571
+    },
+    {
+        "index": 47,
+        "filename": "mobile/App.js",
+        "length": 3171
+    },
+    {
+        "index": 48,
+        "filename": "mobile/src/screens/DashboardScreen.js",
+        "length": 4612
+    },
+    {
+        "index": 49,
+        "filename": "backend/Dockerfile",
+        "length": 780
+    },
+    {
+        "index": 50,
+        "filename": "docker-compose.override.yml",
+        "length": 2792
+    },
+    {
+        "index": 51,
+        "filename": "infrastructure/k8s/backend-deployment.yaml",
+        "length": 2059
+    },
+    {
+        "index": 52,
+        "filename": ".github/workflows/deploy.yml",
+        "length": 3280
+    },
+    {
+        "index": 53,
+        "filename": "backend/src/monitoring/metrics.js",
+        "length": 2312
+    },
+    {
+        "index": 54,
+        "filename": "backend/src/routes/health.js",
+        "length": 1660
+    },
+    {
+        "index": 55,
+        "filename": "backend/src/websocket/setup.js",
+        "length": 403
+    },
+    {
+        "index": 56,
+        "filename": "backend/src/websocket/socketServer.js",
+        "length": 3777
+    },
+    {
+        "index": 57,
+        "filename": "frontend/hooks/useRealtimeCollaboration.js",
+        "length": 1937
+    },
+    {
+        "index": 58,
+        "filename": "mobile/src/services/notifications.js",
+        "length": 3369
+    },
+    {
+        "index": 59,
+        "filename": "backend/src/services/mfaService.js",
+        "length": 2014
+    }
+]
