@@ -1,0 +1,50 @@
+# .github/workflows/ci.yml
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+          cache: 'npm'
+          cache-dependency-path: backend/package-lock.json
+      
+      - name: Install dependencies
+        run: cd backend && npm ci
+      
+      - name: Run linter
+        run: cd backend && npm run lint
+      
+      - name: Run unit tests
+        run: cd backend && npm run test:ci
+        env:
+          NODE_ENV: test
+          DB_HOST: localhost
+      
+      - name: Run integration tests
+        run: cd backend && npm run test:integration
+
+  test-android:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup JDK
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      
+      - name: Run Android unit tests
+        run: cd android && ./gradlew test

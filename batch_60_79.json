@@ -1,0 +1,82 @@
+[
+    {
+        "index": 60,
+        "content": "// backend/src/services/encryptionService.js\nconst crypto = require('crypto');\nconst { logger } = require('../config/server');\n\nclass EncryptionService {\n  constructor() {\n    this.algorithm = 'aes-256-gcm';\n    this.keyDerivationIterations = 100000;\n    this.keyLength = 32;\n    this.ivLength = 16;\n    this.saltLength = 64;\n    this.tagLength = 16;\n  }\n\n  // Encrypt sensitive data\n  encrypt(text, password) {\n    try {\n      const salt = crypto.randomBytes(this.saltLength);\n      const key = crypto.pbkdf2Sync(password, salt, this.keyDerivationIterations, this.keyLength, 'sha256');\n      const iv = crypto.randomBytes(this.ivLength);\n      const cipher = crypto.createCipher(this.algorithm, key, iv);\n      let encrypted = cipher.update(text, 'utf8', 'hex');\n      encrypted += cipher.final('hex');\n      const tag = cipher.getAuthTag();\n      const result = Buffer.concat([salt, iv, tag, Buffer.from(encrypted, 'hex')]);\n      return result.toString('base64');\n    } catch (error) {\n      logger.error('Encryption failed:', error);\n      throw new Error('Encryption failed');\n    }\n  }\n\n  decrypt(encryptedData, password) {\n    try {\n      const data = Buffer.from(encryptedData, 'base64');\n      const salt = data.slice(0, this.saltLength);\n      const iv = data.slice(this.saltLength, this.saltLength + this.ivLength);\n      const tag = data.slice(this.saltLength + this.ivLength, this.saltLength + this.ivLength + this.tagLength);\n      const encrypted = data.slice(this.saltLength + this.ivLength + this.tagLength);\n      const key = crypto.pbkdf2Sync(password, salt, this.keyDerivationIterations, this.keyLength, 'sha256');\n      const decipher = crypto.createDecipher(this.algorithm, key, iv);\n      decipher.setAuthTag(tag);\n      let decrypted = decipher.update(encrypted, 'hex', 'utf8');\n      decrypted += decipher.final('utf8');\n      return decrypted;\n    } catch (error) {\n      logger.error('Decryption failed:', error);\n      throw new Error('Decryption failed');\n    }\n  }\n\n  async hashPassword(password) {\n    const bcrypt = require('bcrypt');\n    const saltRounds = 12;\n    return await bcrypt.hash(password, saltRounds);\n  }\n\n  async verifyPassword(password, hash) {\n    const bcrypt = require('bcrypt');\n    return await bcrypt.compare(password, hash);\n  }\n}\n\nmodule.exports = new EncryptionService();"
+    },
+    {
+        "index": 61,
+        "content": "// backend/src/services/analyticsService.js\nconst { sequelize } = require('../models');\nconst { Op } = require('sequelize');\nconst { logger } = require('../config/server');\n\nclass AnalyticsService {\n  async getUserAnalytics(userId, startDate, endDate) {\n    try {\n      const spendingTrends = await sequelize.query(`\n        SELECT \n          DATE_TRUNC('day', transaction_date) as date,\n          SUM(CASE WHEN type = 'expense' THEN amount ELSE 0 END) as total_expenses,\n          SUM(CASE WHEN type = 'income' THEN amount ELSE 0 END) as total_income,\n          COUNT(*) as transaction_count\n        FROM transactions\n        WHERE user_id = :userId\n          AND transaction_date BETWEEN :startDate AND :endDate\n        GROUP BY DATE_TRUNC('day', transaction_date)\n        ORDER BY date\n      `, {\n        replacements: { userId, startDate, endDate },\n        type: sequelize.QueryTypes.SELECT\n      });\n\n      const categoryBreakdown = await sequelize.query(`\n        SELECT \n          c.name,\n          c.emoji,\n          SUM(t.amount) as total_amount,\n          COUNT(*) as transaction_count\n        FROM transactions t\n        JOIN categories c ON t.category_id = c.id\n        WHERE t.user_id = :userId\n          AND t.type = 'expense'\n          AND t.transaction_date BETWEEN :startDate AND :endDate\n        GROUP BY c.id, c.name, c.emoji\n        ORDER BY total_amount DESC\n      `, {\n        replacements: { userId, startDate, endDate },\n        type: sequelize.QueryTypes.SELECT\n      });\n\n      return { spendingTrends, categoryBreakdown };\n    } catch (error) {\n      logger.error('Analytics failed:', error);\n      throw new Error('Failed to generate analytics');\n    }\n  }\n}\n\nmodule.exports = new AnalyticsService();"
+    },
+    {
+        "index": 62,
+        "content": "// frontend/components/Reports/ReportsGenerator.jsx\nimport React, { useState } from 'react';\nimport { View, ScrollView, StyleSheet } from 'react-native';\nimport { Button } from '@/components/UI/Button';\n\nexport const ReportsGenerator = () => {\n  const [isGenerating, setIsGenerating] = useState(false);\n\n  const handleGenerate = async () => {\n    setIsGenerating(true);\n    setTimeout(() => setIsGenerating(false), 2000);\n  };\n\n  return (\n    <ScrollView style={styles.container}>\n      <View style={styles.content}>\n        <Button \n          title={isGenerating ? \"Generating...\" : \"Generate PDF Report\"}\n          onPress={handleGenerate}\n          disabled={isGenerating}\n        />\n      </View>\n    </ScrollView>\n  );\n};\n\nconst styles = StyleSheet.create({\n  container: { flex: 1, backgroundColor: '#f5f5f5' },\n  content: { padding: 20 }\n});"
+    },
+    {
+        "index": 63,
+        "content": "// frontend/i18n/index.js\nimport i18n from 'i18next';\nimport { initReactI18next } from 'react-i18next';\n\nconst resources = {\n  en: {\n    translation: {\n      dashboard: { title: 'Financial Dashboard', income: 'Income', expenses: 'Expenses' },\n      common: { save: 'Save', cancel: 'Cancel' }\n    }\n  },\n  es: {\n    translation: {\n      dashboard: { title: 'Panel Financiero', income: 'Ingresos', expenses: 'Gastos' }\n    }\n  }\n};\n\ni18n.use(initReactI18next).init({\n  resources,\n  lng: 'en',\n  fallbackLng: 'en',\n  interpolation: { escapeValue: false }\n});\n\nexport default i18n;"
+    },
+    {
+        "index": 64,
+        "content": "// frontend/components/Accessibility/AccessibleButton.jsx\nimport React from 'react';\nimport { Pressable, Text, StyleSheet } from 'react-native';\n\nexport const AccessibleButton = ({ onPress, title, accessibilityLabel }) => (\n  <Pressable \n    onPress={onPress} \n    accessibilityRole=\"button\" \n    accessibilityLabel={accessibilityLabel || title}\n    style={styles.button}\n  >\n    <Text style={styles.text}>{title}</Text>\n  </Pressable>\n);\n\nconst styles = StyleSheet.create({\n  button: { padding: 12, backgroundColor: '#007AFF', borderRadius: 8 },\n  text: { color: '#fff', textAlign: 'center' }\n});"
+    },
+    {
+        "index": 65,
+        "content": "// mobile/src/hooks/useScreenReader.js\nimport { useEffect, useState } from 'react';\nimport { AccessibilityInfo } from 'react-native';\n\nexport const useScreenReader = () => {\n  const [isEnabled, setIsEnabled] = useState(false);\n\n  useEffect(() => {\n    const checkStatus = async () => {\n      const status = await AccessibilityInfo.isScreenReaderEnabled();\n      setIsEnabled(status);\n    };\n    checkStatus();\n  }, []);\n\n  return isEnabled;\n};"
+    },
+    {
+        "index": 66,
+        "content": "#!/bin/bash\n# scripts/deploy-production.sh\nset -e\necho \"🚀 Starting production deployment...\"\nVERSION=$(git rev-parse --short HEAD)\ncd backend && docker build -t expense-tracker-backend:${VERSION} .\ncd ../frontend && docker build -t expense-tracker-frontend:${VERSION} .\necho \"Deploying to Kubernetes...\"\nkubectl set image deployment/expense-tracker-backend backend=expense-tracker-backend:${VERSION}\nkubectl rollout status deployment/expense-tracker-backend\necho \"✅ Deployment complete!\""
+    },
+    {
+        "index": 67,
+        "content": "#!/bin/bash\n# scripts/post-deployment-check.sh\necho \"🔍 Running post-deployment verification...\"\nHEALTH_STATUS=$(curl -s -o /dev/null -w \"%{http_code}\" https://api.aiexpensetracker.com/health)\nif [ $HEALTH_STATUS -eq 200 ]; then\n  echo \"✅ API Health: OK\"\nelse\n  echo \"❌ API Health: Failed ($HEALTH_STATUS)\"\n  exit 1\nfi"
+    },
+    {
+        "index": 68,
+        "content": "# Production URLs\nFrontend: https://aiexpensetracker.com\nAPI: https://api.aiexpensetracker.com\nDocumentation: https://docs.aiexpensetracker.com\nStatus Page: https://status.aiexpensetracker.com"
+    },
+    {
+        "index": 69,
+        "content": "// backend/src/middleware/tenant.js\nconst { Tenant, UserTenant } = require('../models');\n\nclass TenantMiddleware {\n  async resolveTenant(req, res, next) {\n    try {\n      const tenantIdentifier = req.headers['x-tenant-id'] || req.query.tenant;\n      if (!tenantIdentifier) return res.status(400).json({ error: 'Tenant required' });\n      const tenant = await Tenant.findOne({ where: { id: tenantIdentifier, isActive: true } });\n      if (!tenant) return res.status(404).json({ error: 'Tenant not found' });\n      req.tenant = tenant;\n      next();\n    } catch (error) {\n      res.status(500).json({ error: 'Tenant resolution failed' });\n    }\n  }\n}\n\nmodule.exports = new TenantMiddleware();"
+    },
+    {
+        "index": 70,
+        "content": "// backend/src/models/Tenant.js\nconst { DataTypes } = require('sequelize');\nmodule.exports = (sequelize) => {\n  return sequelize.define('Tenant', {\n    id: { type: DataTypes.UUID, defaultValue: DataTypes.UUIDV4, primaryKey: true },\n    name: { type: DataTypes.STRING, allowNull: false },\n    subdomain: { type: DataTypes.STRING, unique: true },\n    isActive: { type: DataTypes.BOOLEAN, defaultValue: true }\n  });\n};"
+    },
+    {
+        "index": 71,
+        "content": "// frontend/components/WhiteLabel/ThemeCustomizer.jsx\nimport React, { useState } from 'react';\nimport { View, Text, StyleSheet } from 'react-native';\nimport { Button } from '@/components/UI';\n\nexport const ThemeCustomizer = () => {\n  const [primary, setPrimary] = useState('#6366f1');\n  return (\n    <View style={styles.container}>\n      <Text>Primary Color: {primary}</Text>\n      <Button title=\"Save Theme\" onPress={() => {}} />\n    </View>\n  );\n};\nconst styles = StyleSheet.create({ container: { padding: 20 } });"
+    },
+    {
+        "index": 72,
+        "content": "// backend/src/services/realtimeAnalytics.js\nconst { EventEmitter } = require('events');\nclass RealtimeAnalytics extends EventEmitter {\n  trackEvent(type, data) {\n    this.emit('metric:update', { type, data, timestamp: Date.now() });\n  }\n}\nmodule.exports = new RealtimeAnalytics();"
+    },
+    {
+        "index": 73,
+        "content": "// backend/src/services/biReporting.js\nconst { sequelize } = require('../models');\nclass BIReportingService {\n  async generateExecutiveSummary(tenantId) {\n    const data = await sequelize.query('SELECT SUM(amount) FROM transactions WHERE tenant_id = ?', { replacements: [tenantId] });\n    return { total: data[0] };\n  }\n}\nmodule.exports = new BIReportingService();"
+    },
+    {
+        "index": 74,
+        "content": "// backend/src/integrations/zapier.js\nconst express = require('express');\nclass ZapierIntegration {\n  constructor() { this.router = express.Router(); this.setup(); }\n  setup() { this.router.post('/hooks/new-transaction', (req, res) => res.json({ success: true })); }\n}\nmodule.exports = new ZapierIntegration();"
+    },
+    {
+        "index": 75,
+        "content": "// backend/src/integrations/banking/plaidIntegration.js\nconst { PlaidApi } = require('plaid');\nclass PlaidIntegration {\n  async syncTransactions(accessToken) {\n    return { transactions: [], count: 0 };\n  }\n}\nmodule.exports = new PlaidIntegration();"
+    },
+    {
+        "index": 76,
+        "content": "// backend/src/services/workflowEngine.js\nconst { EventEmitter } = require('events');\nclass WorkflowEngine extends EventEmitter {\n  async triggerWorkflow(trigger, data) {\n    console.log(`Workflow triggered: ${trigger}`);\n    this.emit('workflow:completed', { trigger, status: 'success' });\n  }\n}\nmodule.exports = new WorkflowEngine();"
+    },
+    {
+        "index": 77,
+        "content": "-- database/optimizations/performance_indexes.sql\nCREATE INDEX idx_transactions_user_date ON transactions(user_id, transaction_date DESC);\nCREATE INDEX idx_transactions_tenant_date ON transactions(tenant_id, transaction_date DESC);\nCREATE INDEX idx_budgets_user_active ON budgets(user_id) WHERE is_active = TRUE;"
+    },
+    {
+        "index": 78,
+        "content": "// backend/src/cache/cacheManager.js\nconst Redis = require('ioredis');\nclass CacheManager {\n  constructor() { this.redis = new Redis(); }\n  async get(key) { return await this.redis.get(key); }\n  async set(key, val, ttl) { await this.redis.setex(key, ttl, val); }\n}\nmodule.exports = new CacheManager();"
+    },
+    {
+        "index": 79,
+        "content": "// backend/src/middleware/compression.js\nconst compression = require('compression');\nmodule.exports = compression({\n  filter: (req, res) => req.headers['x-no-compression'] ? false : compression.filter(req, res),\n  threshold: 1024\n});"
+    }
+]

@@ -1,0 +1,29 @@
+// mobile/app.json
+{
+  "expo": {
+    "name": "AI Expense Tracker Pro",
+    "slug": "ai-expense-tracker-pro",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "automatic",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": { "fallbackToCacheTimeout": 0 },
+    "assetBundlePatterns": [ "**/*" ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.aiexpensetracker.pro",
+      "infoPlist": {
+        "NSCameraUsageDescription": "This app uses the camera to scan receipts."
+      }
+    },
+    "android": {
+      "package": "com.aiexpensetracker.pro",
+      "permissions": [ "CAMERA", "READ_EXTERNAL_STORAGE", "WRITE_EXTERNAL_STORAGE" ]
+    }
+  }
+}

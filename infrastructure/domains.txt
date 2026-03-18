@@ -1,0 +1,5 @@
+# Production URLs
+Frontend: https://aiexpensetracker.com
+API: https://api.aiexpensetracker.com
+Documentation: https://docs.aiexpensetracker.com
+Status Page: https://status.aiexpensetracker.com

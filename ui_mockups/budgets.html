@@ -1,0 +1,28 @@
+<!-- budgets.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Budgets - AI Expense Tracker Pro</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('design-system.html');
+        .budget-card { background: white; padding: var(--space-xl); border: 1px solid var(--border); }
+        .actual.over { color: var(--danger); }
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); align-items: center; justify-content: center; }
+        .modal.show { display: flex; }
+        .modal-content { background: white; padding: var(--space-xl); width: 90%; max-width: 500px; }
+    </style>
+</head>
+<body>
+    <header class="app-header"><nav class="container nav"><div>💰 AI Finance Pro</div><ul class="nav-links"><li><a>Dashboard</a></li><li><a class="active">Budgets</a></li></ul></nav></header>
+    <main class="container">
+        <div class="flex-between"><h1>Budgets</h1><button class="btn btn-primary">+ Add</button></div>
+        <div class="grid grid-3"><div class="budget-card"><h4>Groceries</h4><div>Budget: $0.00</div><div class="actual over">$13,050.00</div><div class="progress-bar"><div class="progress-fill danger" style="width:100%;"></div></div></div></div>
+        <div class="card" style="margin-top:2rem;"><canvas id="budgetChart"></canvas></div>
+    </main>
+    <script>
+        new Chart(document.getElementById('budgetChart'), { type: 'bar', data: { labels: ['Groceries'], datasets:[{ label:'Budget', data:[0] },{ label:'Actual', data:[13050], backgroundColor:'#ef4444' }] } });
+    </script>
+</body>
+</html>
