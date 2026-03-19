@@ -1,0 +1,41 @@
+# OS & editor artifacts
+.DS_Store
+Thumbs.db
+desktop.ini
+.Spotlight-V100
+.Trashes
+
+# Editor directories and files
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Temporary files
+/tmp/
+*.tmp
+*.temp
+
+# Build artifacts (if any code is ever added)
+node_modules/
+dist/
+build/
+.next/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.coverage
+
+# Environment files — never commit secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+logs/
+
+# Package lock files for non-code repos (keep package.json if present)
+# npm-shrinkwrap.json
