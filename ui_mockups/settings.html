@@ -1,0 +1,27 @@
+<!-- settings.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Settings - AI Expense Tracker Pro</title>
+    <style>
+        @import url('design-system.html');
+        .settings-sidebar { display: grid; grid-template-columns: 250px 1fr; gap: var(--space-xl); }
+        .sidebar-nav { background: white; padding: var(--space-md); position: sticky; top: 100px; }
+        .sidebar-item { padding: var(--space-md); cursor: pointer; }
+        .sidebar-item.active { background: var(--primary); color: white; }
+        .settings-content { background: white; padding: var(--space-xl); }
+        .setting-item { display: flex; justify-content: space-between; padding: var(--space-md) 0; border-bottom: 1px solid var(--border); }
+        .toggle { width: 50px; height: 24px; background: var(--border); border-radius: 12px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <header class="app-header"><nav class="container nav"><div>💰 AI Finance Pro</div><ul class="nav-links"><li><a class="active">Settings</a></li></ul></nav></header>
+    <main class="container">
+        <div class="settings-sidebar">
+            <nav class="sidebar-nav"><div class="sidebar-item active">General</div><div class="sidebar-item">Currency</div></nav>
+            <div class="settings-content"><div class="setting-item"><h4>Dark Mode</h4><div class="toggle"></div></div></div>
+        </div>
+    </main>
+</body>
+</html>

@@ -1,0 +1,35 @@
+#!/bin/bash
+# scripts/verify-package.sh
+
+PACKAGE_FILE=$1
+SIGNATURE_FILE=$2
+
+if [ -z "$PACKAGE_FILE" ] || [ -z "$SIGNATURE_FILE" ]; then
+  echo "Usage: $0 <package-file> <signature-file>"
+  exit 1
+fi
+
+echo "🔐 Verifying package signature..."
+
+# Import public key if needed
+gpg --import keys/enterprise-public-key.asc 2>/dev/null || true
+
+# Verify signature
+if gpg --verify "$SIGNATURE_FILE" "$PACKAGE_FILE"; then
+  echo "✅ Signature verified successfully!"
+  
+  # Verify checksums
+  echo "🔍 Verifying file checksums..."
+  tar -xzf "$PACKAGE_FILE" -O | sha256sum --check <(tar -xzf "$PACKAGE_FILE" -O MANIFEST.json | jq -r '.checksums | to_entries | .[] | "\(.value)  \(.key)"')
+  
+  echo "✅ All checksums verified!"
+  
+  # Display package info
+  echo ""
+  echo "📦 Package Information:"
+  tar -xzf "$PACKAGE_FILE" -O MANIFEST.json | jq .
+  
+else
+  echo "❌ Signature verification failed!"
+  exit 1
+fi

@@ -1,0 +1,13 @@
+C4Context
+    title AI Expense Tracker Pro - System Context Diagram
+    
+    Person(user, "End User", "Individual or business user managing finances")
+    Person(admin, "System Admin", "Platform administrator")
+    
+    System_Boundary(platform, "AI Expense Tracker Pro") {
+        System(web, "Web Application", "Next.js 14, React 18, TypeScript")
+        System(mobile, "Mobile Application", "React Native, Expo SDK")
+        System(api, "API Gateway", "Node.js, Express, GraphQL")
+        System(ai, "AI Engine", "Python FastAPI, TensorFlow, Tesseract")
+        System(worker, "Background Workers", "Bull Queue, Redis")
+    }
